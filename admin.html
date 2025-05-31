@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Princess Admin Panel - Persistent</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    :root {
+      --bg-color: #1a1a2e;
+      --header-bg: #16213e;
+      --text-color: #eee;
+      --primary-color: #f9a826;
+      --danger-color: #e94560;
+      --danger-hover: #d8344a;
+      --button-bg: #444c6b;
+      --button-hover: #596182;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    header {
+      background: var(--header-bg);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      flex-grow: 1;
+    }
+    #userInfo {
+      margin-right: 20px;
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+    #logoutBtn {
+      background: var(--danger-color);
+      border: none;
+      padding: 10px 20px;
+      color: var(--text-color);
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+    }
+    #logoutBtn:hover {
+      background: var(--danger-hover);
+    }
+    main {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    section {
+      background: #222746;
+      padding: 20px;
+      border-radius: 8px;
+      flex: 1 1 300px;
+      max-width: 600px;
+      box-shadow: 0 0 10px #111;
+    }
+    h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+    /* Links list */
+    ul.links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    ul.links li {
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    ul.links li a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color 0.3s ease;
+      flex-grow: 1;
+    }
+    ul.links li a:hover {
+      color: var(--primary-color);
+    }
+    .link-actions button {
+      background: var(--button-bg);
+      border: none;
+      color: var(--text-color);
+      padding: 5px 10px;
+      margin-left: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.9rem;
+    }
+    .link-actions button:hover {
+      background: var(--button-hover);
+    }
+    /* Form for adding/editing links */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    form label {
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    form input {
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    form button {
+      background: var(--primary-color);
+      border: none;
+      padding: 10px;
+      color: var(--bg-color);
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+      margin-top: 10px;
+    }
+    form button:hover {
+      background: #d18f1a;
+    }
+    /* Logs panel */
+    #logs {
+      max-height: 250px;
+      overflow-y: auto;
+      background: #0f1123;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+    #logs p {
+      margin: 5px 0;
+      word-break: break-word;
+    }
+    /* Dashboard stats */
+    #dashboard {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      flex: 1 1 120px;
+      background: #111530;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: inset 0 0 10px #000a;
+    }
+    .stat h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+    .stat p {
+      margin: 5px 0 0 0;
+      font-size: 1rem;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 700px) {
+      main {
+        flex-direction: column;
+      }
+      section {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Princess Admin Panel</h1>
+    <div id="userInfo"></div>
+    <button id="logoutBtn">Logout</button>
+  </header>
+  <main>
+    <section id="dashboardSection">
+      <h2>Dashboard Stats</h2>
+      <div id="dashboard">
+        <div class="stat">
+          <h3 id="totalLinks">0</h3>
+          <p>Total Links</p>
+        </div>
+        <div class="stat">
+          <h3 id="totalClicks">0</h3>
+          <p>Total Clicks</p>
+        </div>
+        <div class="stat">
+          <h3 id="lastClickTime">N/A</h3>
+          <p>Last Click</p>
+        </div>
+      </div>
+    </section>
+    <section id="linksSection">
+      <h2>Manage Links</h2>
+      <ul class="links" id="linksList"></ul>
+      <form id="linkForm">
+        <h3 id="formTitle">Add New Link</h3>
+        <label for="labelInput">Label</label>
+        <input type="text" id="labelInput" placeholder="e.g. Instagram" required />
+        <label for="urlInput">URL</label>
+        <input type="url" id="urlInput" placeholder="https://example.com" required />
+        <label for="iconInput">Icon (FontAwesome class)</label>
+        <input type="text" id="iconInput" placeholder="e.g. fab fa-instagram" required />
+        <button type="submit">Add Link</button>
+        <button type="button" id="cancelEditBtn" style="display:none; margin-top:5px; background:#666;">Cancel Edit</button>
+      </form>
+    </section>
+    <section id="logsSection">
+      <h2>Click Logs</h2>
+      <div id="logs">No clicks recorded yet.</div>
+    </section>
+  </main>
+
+  <script>
+    // === Constants for localStorage keys ===
+    const STORAGE_LINKS_KEY = "adminPanelLinks";
+    const STORAGE_LOGS_KEY = "adminPanelLogs";
+
+    // === State ===
+    // Parse currentUser from localStorage if JSON, else fallback
+    let rawUser = localStorage.getItem("currentUser");
+    let currentUser = "AdminUser";
+    try {
+      if (rawUser) {
+        const parsedUser = JSON.parse(rawUser);
+        if (parsedUser && parsedUser.username) {
+          currentUser = parsedUser.username;
+        } else {
+          currentUser = rawUser;
+        }
+      }
+    } catch {
+      currentUser = rawUser || "AdminUser";
+    }
+
+    // Load saved links or use defaults
+    let links = JSON.parse(localStorage.getItem(STORAGE_LINKS_KEY)) || [
+      { label: "Instagram", url: "https://instagram.com/skyfoxofficial3994", icon: "fab fa-instagram" },
+      { label: "TikTok", url: "https://tiktok.com/@skyfoxofficial3994", icon: "fab fa-tiktok" },
+      { label: "Twitch", url: "https://www.twitch.tv/lilyfoxfire", icon: "fab fa-twitch" },
+      { label: "YouTube", url: "https://youtube.com/@skyfoxofficial3994", icon: "fab fa-youtube" },
+      { label: "Discord Server", url: "https://discord.gg/b2Zxbeu4Hc", icon: "fab fa-discord" }
+    ];
+
+    // Load saved logs or empty array
+    let logs = JSON.parse(localStorage.getItem(STORAGE_LOGS_KEY)) || [];
+
+    let editingIndex = null;
+
+    // === DOM Elements ===
+    const userInfoEl = document.getElementById("userInfo");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const linksListEl = document.getElementById("linksList");
+    const linkForm = document.getElementById("linkForm");
+    const labelInput = document.getElementById("labelInput");
+    const urlInput = document.getElementById("urlInput");
+    const iconInput = document.getElementById("iconInput");
+    const formTitle = document.getElementById("formTitle");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+    const logsEl = document.getElementById("logs");
+
+    const totalLinksEl = document.getElementById("totalLinks");
+    const totalClicksEl = document.getElementById("totalClicks");
+    const lastClickTimeEl = document.getElementById("lastClickTime");
+
+    // === Functions ===
+
+    // Render user info
+    function renderUserInfo() {
+      userInfoEl.textContent = `Logged in as: ${currentUser}`;
+    }
+
+    // Save links to localStorage
+    function saveLinks() {
+      localStorage.setItem(STORAGE_LINKS_KEY, JSON.stringify(links));
+    }
+
+    // Save logs to localStorage
+    function saveLogs() {
+      localStorage.setItem(STORAGE_LOGS_KEY, JSON.stringify(logs));
+    }
+
+    // Render links list
+    function renderLinks() {
+      linksListEl.innerHTML = "";
+      if (links.length === 0) {
+        linksListEl.innerHTML = "<li>No links added yet.</li>";
+        return;
+      }
+      links.forEach((link, i) => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = link.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.innerHTML = `<i class="${link.icon}"></i> ${link.label}`;
+        a.addEventListener("click", (e) => {
+          logClick(link);
+        });
+        li.appendChild(a);
+
+        // Actions container
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "link-actions";
+
+        // Edit button
+        const editBtn = document.createElement("button");
+        editBtn.innerHTML = `<i class="fas fa-pen"></i>`;
+        editBtn.title = "Edit link";
+        editBtn.addEventListener("click", () => {
+          startEditLink(i);
+        });
+        actionsDiv.appendChild(editBtn);
+
+        // Delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.innerHTML = `<i class="fas fa-trash"></i>`;
+        deleteBtn.title = "Delete link";
+        deleteBtn.addEventListener("click", () => {
+          if (confirm(`Delete link "${link.label}"?`)) {
+            deleteLink(i);
+          }
+        });
+        actionsDiv.appendChild(deleteBtn);
+
+        li.appendChild(actionsDiv);
+        linksListEl.appendChild(li);
+      });
+      updateDashboard();
+    }
+
+    // Add or update link
+    function saveLink(e) {
+      e.preventDefault();
+      const label = labelInput.value.trim();
+      const url = urlInput.value.trim();
+      const icon = iconInput.value.trim();
+
+      if (!label || !url || !icon) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      if (editingIndex !== null) {
+        // Update existing
+        links[editingIndex] = { label, url, icon };
+        editingIndex = null;
+        formTitle.textContent = "Add New Link";
+        linkForm.querySelector("button[type=submit]").textContent = "Add Link";
+        cancelEditBtn.style.display = "none";
+      } else {
+        // Add new
+        links.push({ label, url, icon });
+      }
+      saveLinks();
+      renderLinks();
+      linkForm.reset();
+    }
+
+    // Start editing a link
+    function startEditLink(index) {
+      const link = links[index];
+      labelInput.value = link.label;
+      urlInput.value = link.url;
+      iconInput.value = link.icon;
+      editingIndex = index;
+      formTitle.textContent = "Edit Link";
+      linkForm.querySelector("button[type=submit]").textContent = "Save Changes";
+      cancelEditBtn.style.display = "block";
+      labelInput.focus();
+    }
+
+    // Cancel editing
+    cancelEditBtn.addEventListener("click", () => {
+      editingIndex = null;
+      formTitle.textContent = "Add New Link";
+      linkForm.querySelector("button[type=submit]").textContent = "Add Link";
+      cancelEditBtn.style.display = "none";
+      linkForm.reset();
+    });
+
+    // Delete a link
+    function deleteLink(index) {
+      links.splice(index, 1);
+      saveLinks();
+      renderLinks();
+    }
+
+    // Log a click
+    function logClick(link) {
+      const now = new Date();
+      const logEntry = {
+        label: link.label,
+        url: link.url,
+        icon: link.icon,
+        time: now.toISOString(),
+      };
+      logs.unshift(logEntry);
+      if (logs.length > 100) logs.pop(); // limit logs to 100
+      saveLogs();
+      renderLogs();
+      updateDashboard();
+    }
+
+    // Render click logs
+    function renderLogs() {
+      if (logs.length === 0) {
+        logsEl.textContent = "No clicks recorded yet.";
+        return;
+      }
+      logsEl.innerHTML = "";
+      logs.forEach((log) => {
+        const p = document.createElement("p");
+        const time = new Date(log.time);
+        p.textContent = `[${time.toLocaleString()}] Clicked: ${log.label} (${log.url})`;
+        logsEl.appendChild(p);
+      });
+    }
+
+    // Update dashboard stats
+    function updateDashboard() {
+      totalLinksEl.textContent = links.length;
+      totalClicksEl.textContent = logs.length;
+      if (logs.length > 0) {
+        const lastTime = new Date(logs[0].time);
+        lastClickTimeEl.textContent = lastTime.toLocaleString();
+      } else {
+        lastClickTimeEl.textContent = "N/A";
+      }
+    }
+
+    // Logout button handler
+    logoutBtn.addEventListener("click", () => {
+      if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("currentUser");
+        // Redirect to index.html after logout
+        window.location.href = "index.html";
+      }
+    });
+
+    // Initialize UI
+    renderUserInfo();
+    renderLinks();
+    renderLogs();
+    updateDashboard();
+
+    // Bind form submit
+    linkForm.addEventListener("submit", saveLink);
+  </script>
+</body>
+</html>

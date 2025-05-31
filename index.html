@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Linktree - Skyfox Official</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #f9a826;
+      margin-bottom: 15px;
+      font-size: 2.5rem;
+    }
+    #admin-btn {
+      background: #f9a826;
+      color: #1a1a2e;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 30px;
+      box-shadow: 0 0 8px #f9a826aa;
+      transition: background 0.3s ease;
+    }
+    #admin-btn:hover {
+      background: #d18f00;
+    }
+    #links {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 400px;
+    }
+    a.link-item {
+      display: flex;
+      align-items: center;
+      background: #222746;
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: #eee;
+      text-decoration: none;
+      font-size: 1.2rem;
+      box-shadow: 0 0 10px #000a;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    a.link-item:hover {
+      background: #f9a826;
+      color: #1a1a2e;
+    }
+    a.link-item i {
+      margin-right: 15px;
+      font-size: 1.5rem;
+      width: 25px;
+      text-align: center;
+    }
+    #no-links {
+      font-size: 1.2rem;
+      color: #aaa;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Skyfox Official Links</h1>
+  
+  <button id="admin-btn">Admin Panel</button>
+
+  <div id="links"></div>
+  <div id="no-links" style="display:none;">No links available.</div>
+
+  <script>
+    const STORAGE_LINKS_KEY = "adminPanelLinks";
+    const linksContainer = document.getElementById('links');
+    const noLinksMessage = document.getElementById('no-links');
+
+    function renderLinks() {
+      const links = JSON.parse(localStorage.getItem(STORAGE_LINKS_KEY)) || [];
+      linksContainer.innerHTML = "";
+
+      if (links.length === 0) {
+        noLinksMessage.style.display = "block";
+        return;
+      } else {
+        noLinksMessage.style.display = "none";
+      }
+
+      links.forEach(link => {
+        const a = document.createElement("a");
+        a.href = link.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.className = "link-item";
+        a.innerHTML = `<i class="${link.icon}"></i> ${link.label}`;
+        linksContainer.appendChild(a);
+      });
+    }
+
+    renderLinks();
+
+    // Redirect to admin.html when admin button is clicked
+    document.getElementById('admin-btn').addEventListener('click', () => {
+      window.location.href = 'admin.html';
+    });
+  </script>
+</body>
+</html>
